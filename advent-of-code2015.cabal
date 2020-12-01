@@ -1,0 +1,9 @@
+cabal-version:       >=1.10
+
+name:                advent-of-code2015
+version:             0.1.0.0
+license-file:        LICENSE
+author:              Graham Rogers
+maintainer:          graham@rogers.me.uk
+build-type:          Simple
+extra-source-files:  README.md
