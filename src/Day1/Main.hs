@@ -1,14 +1,13 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeApplications #-}
 module Day1.Main where
 
+import Control.Applicative
 import Control.Monad
+import Data.Attoparsec.ByteString.Char8 (char)
+import Data.Attoparsec.ByteString.Lazy
+import Data.ByteString.Lazy
 import Data.Functor
-import System.IO
-import Text.Parsec
-import Text.Parsec.Text.Lazy
-
-withInput :: (String -> IO a) -> IO a
-withInput f = withFile "data/Day1/input.txt" ReadMode $ hGetContents >=> f
+import System.IO (IOMode(ReadMode), withFile)
 
 newtype Instruction a = Delta a
   deriving Show
@@ -31,8 +30,11 @@ down = char ')' $> mkInstruction (-1)
 instruction :: Num a => Parser (Instruction a)
 instruction = up <|> down
 
-instructions :: Num a => Parser (Instruction a)
-instructions = fmap mconcat $ many instruction
+instructions :: Num a => Parser [Instruction a]
+instructions = many instruction
+
+withInput :: (ByteString -> IO a) -> IO a
+withInput f = withFile "data/Day1/input.txt" ReadMode $ hGetContents >=> f
 
 main :: IO ()
-main = parseFromFile (instructions @Int) "data/Day1/input.txt" >>= print
+main = withInput $ print . fmap mconcat . parse (instructions @Int)
